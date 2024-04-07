@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fetch Data on Button Click</title>
+</head>
+<body>
+    <button id="fetchButton">Fetch Data</button>
+    <div id="dataContainer"></div>
+
+    <script>
+        document.getElementById('fetchButton').addEventListener('click', fetchData);
+
+        function fetchData() {
+            fetch('http://localhost:3000/api/getservice')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Display data in the container
+                    const dataContainer = document.getElementById('dataContainer');
+                    dataContainer.innerHTML = ''; // Clear previous data
+                    const dataList = document.createElement('ul');
+                    data.forEach(item => {
+                        const listItem = document.createElement('li');
+                        listItem.textContent = item.name; // Assuming each item has a 'name' property
+                        listItem.addEventListener('click', () => {
+                            fetchSubData(item.id);
+                        });
+                        dataList.appendChild(listItem);
+                    });
+                    dataContainer.appendChild(dataList);
+                })
+                .catch(error => {
+                    console.error('There was a problem fetching the data:', error);
+                });
+        }
+
+        function fetchSubData(id) {
+            fetch(`http://localhost:3000/api/sub/getsub/${id}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(subData => {
+                    // Handle sub data here
+                    console.log('Sub Data:', subData);
+                    // You can do whatever you want with the sub data, such as displaying it in another container
+                })
+                .catch(error => {
+                    console.error('There was a problem fetching the sub data:', error);
+                });
+        }
+    </script>
+</body>
+</html>
