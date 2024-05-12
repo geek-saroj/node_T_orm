@@ -1,22 +1,44 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm"
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  BeforeInsert,
+  Index,
+} from "typeorm";
+import { IsEmail, MinLength, IsNotEmpty } from "class-validator";
+import * as bcrypt from "bcrypt";
 
 @Entity()
 export class User {
-    @PrimaryGeneratedColumn()
-    id: number
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column()
-    firstName: string
+  @Column()
+  @IsNotEmpty()
 
-    @Column()
-    lastName: string
+  firstName: string;
 
-    @Column()
-    age: number
+  @Column()
+  lastName: string;
 
-    @Column()
-    email: string
+  @Column()
+  age: number;
 
-    @Column()
-    password: string
+  @Column()
+  @Index()
+  @Column()
+  @IsEmail()
+  @MinLength(3)
+  email: string;
+
+  @Column()
+  password: string;
+  @BeforeInsert()
+  async hashPassword() {
+    this.password = await bcrypt.hash(this.password, 10);
+  }
+
+  public async validatePassword(password: string): Promise<boolean> {
+    return bcrypt.compare(password, this.password);
+  }
 }

@@ -4,7 +4,8 @@ import express from "express";
 const authRoute = express.Router({mergeParams: true});
 
 authRoute.post("/register", UserControllers.createUser);
-authRoute.get("/login", UserControllers.loginUser);
+authRoute.post("/verify-otp", UserControllers.verifyOTP);
+authRoute.post("/login", UserControllers.loginUser);
 
 
 

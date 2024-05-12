@@ -1,9 +1,10 @@
 // ServiceController.ts
-import { Request, Response } from 'express';
-import { Service } from '../../entites/Services.entites';
+import { Request, Response } from "express";
+import { Service } from "../../entites/Services.entites";
 import { AppDataSource } from "../../datasource/datasource";
+import { Offering } from "../../entites/Offering.entity";
 
-
+const offeringRepository = AppDataSource.getRepository(Offering);
 const serviceRepository = AppDataSource.getRepository(Service);
 
 class ServiceController {
@@ -28,6 +29,22 @@ class ServiceController {
       res.status(500).json({ message: "Internal Server Error" });
     }
   }
+
+  async  createMicroservice(req: Request, res: Response) {
+    const servicedata = req.body;
+    console.log("servicedata is", servicedata);
+    try {
+      for (const service of servicedata) {
+        const newService = offeringRepository.create(service);
+        await offeringRepository.save(newService);
+      }
+      res.status(200).json({ message: 'Services created successfully' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Error creating services' });
+    }
+  }
+  
 }
 
 export default new ServiceController();
