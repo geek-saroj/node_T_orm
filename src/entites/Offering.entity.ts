@@ -2,17 +2,15 @@ import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Offering {
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @PrimaryGeneratedColumn()
-    id: number;
+  @Column()
+  name: string;
 
-    @Column()
-    name: string;
+  @Column({ type: "double precision" })
+  price: number;
 
-    @Column()
-    price: string;
-
-
-    @Column()
-    estimated_hour: string;
+  @Column()
+  estimated_hour: string;
 }

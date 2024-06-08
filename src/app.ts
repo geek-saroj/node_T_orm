@@ -4,18 +4,37 @@ import swaggerUi from 'swagger-ui-express';
 import { swaggerDocs } from './swagger/swagger_docs';
 import cors from 'cors';
 import allRoute from "./router";
+import morgan from 'morgan';
+import cron from "node-cron";
 const app = express();
 
 app.use(express.json());
 const port = 3000;
 app.use(cors())
+app.use(morgan('dev'));
 
 AppDataSource.initialize().then(() => {
     console.log("Data Source has been initialized!")
 })
 
-app.use(express.json());
+// app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.post('/testjson', (req, res) => {
+    console.log("req.body is", req.body);
+//     const payloadSize = req.get('content-length');
+//   console.log('Payload size:', payloadSize);
+
+
+const payloadSizeBytes: number = parseInt(req.get('content-length') || '0');
+
+// Convert bytes to megabytes
+const payloadSizeMB: number = payloadSizeBytes / (1024 * 1024);
+
+console.log('Payload size:', payloadSizeMB, 'MB');
+    res.send(req.body);
+
+    
+})
 // app.use(express.static('public'));
 app.set('view engine', 'ejs');
 app.get("/", (req, res) => {
@@ -26,6 +45,9 @@ app.get("/", (req, res) => {
 // app.use('/api', servicerouter)
 // app.use('/api/sub',subserviceRoute)
 // app.use('/api/location',locationRoute)
+// cron.schedule('* * * * *', async () => {
+//     console.log('running a task every minute');
+// })
 app.use('/api', allRoute);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 

@@ -10,8 +10,10 @@ const serviceRepository = AppDataSource.getRepository(Service);
 class ServiceController {
   async createService(req: Request, res: Response) {
     try {
-      const { name } = req.body;
-      const newService = serviceRepository.create({ name });
+      const { name ,price } = req.body;
+      console.log("req.body is", req.body);
+      console.log("name is", name);
+      const newService = serviceRepository.create({ name ,price });
       await serviceRepository.save(newService);
       res.json({ message: "Service created successfully" });
     } catch (error) {
@@ -32,6 +34,7 @@ class ServiceController {
 
   async  createMicroservice(req: Request, res: Response) {
     const servicedata = req.body;
+    console.log("req.body is", req.body);
     console.log("servicedata is", servicedata);
     try {
       for (const service of servicedata) {

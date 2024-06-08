@@ -9,6 +9,7 @@ let newUser: User;
 class UserControllers {
   async createUser(req: any, res: Response) {
     try {
+      console.log("req.body is", req.body);
       const { email } = req.body;
 
       const checkemail = req.body.email;
@@ -68,7 +69,7 @@ class UserControllers {
 
   async loginUser(req: Request, res: Response) {
     const { email, password } = req.body;
-    // console.log("req.body is", req.body);
+    console.log("req.body is", req.body);
     // console.log("email is", req.body.email);
     try {
       const user = await userRepo.findOne({
