@@ -13,6 +13,7 @@ allRoute.use("/subservice", subserviceRoute);
 allRoute.use("/location", locationRoute);
 
 
+
 export default allRoute;
 
 

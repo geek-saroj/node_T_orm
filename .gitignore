@@ -1,0 +1,13 @@
+.idea/
+.vscode/
+local_pgdata
+node_modules/
+build/
+
+dist/
+
+.env
+app.log
+
+
+
