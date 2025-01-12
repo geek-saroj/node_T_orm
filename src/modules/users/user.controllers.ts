@@ -109,6 +109,10 @@ class UserControllers {
       const jwtdata = {
         user: {
           email: user?.email,
+          id: user?.id,
+          firstName: user?.firstName,
+          lastName: user?.lastName,
+          age: user?.age,
         },
       };
 
@@ -118,7 +122,7 @@ class UserControllers {
       });
 
       if (await user.validatePassword(password)) {
-        res.status(200).json({ token: jwtToken });
+        res.status(200).json({user, jwtToken});
       } else {
         res.json({ message: "Login Failed" });
       }

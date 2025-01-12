@@ -7,10 +7,15 @@ import allRoute from "./router";
 import morgan from "morgan";
 import cron from "node-cron";
 import { firebaseNotificationService } from "./firebase/firebase.notification.service";
+import routeLimiter, { testthing } from "./function/routelimite";
+import http from 'http';
+import { Server } from "socket.io";
+import { ChatController } from "./modules/socket/socket.controller";
+import  chatRoutes  from "./modules/socket/socket.route";
 const app = express();
-
+//  "start": "npm run db-run-migration && nodemon src/app.ts",
 app.use(express.json());
-const port = 3000;
+const port = 3006;
 app.use(cors());
 app.use(morgan("dev"));
 
@@ -20,6 +25,55 @@ AppDataSource.initialize().then(() => {
 
 // app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+const server = http.createServer(app);
+const io = new Server(server, {
+    cors: {
+        origin: '*',
+        methods: ['GET', 'POST'],
+    },
+});
+app.use('/socket', chatRoutes);
+
+let users: { userId: string; socketId: string }[] = [];
+
+const addUser = (userId: string, socketId: string) => {
+  !users.some((user) => user.userId === userId) &&
+    users.push({ userId, socketId });
+};
+
+
+
+io.on('connection', (socket) => {
+  console.log('A user connected');
+
+  socket.on("addUser", (userId) => {
+    addUser(userId, socket.id);
+    io.emit("getUsers", users);
+  });
+
+  socket.on("message", (data) => {
+    console.log("data is", data);
+    const user = users.find((user) => user.socketId === data.room);
+    io.to(data.room).emit("getMessage", data.message);
+
+    if (user) {
+      io.to(user.socketId).emit("getMessage", data.message);
+      console.log("data is", data);
+      // Send the message text directly
+    } else {
+      console.log(`User with ID ${data.receiverId} not found`);
+    }
+  });
+  socket.on('sendMessage', (username: string, text: string) => {
+      ChatController.addMessage(socket, username, text);
+  });
+
+  socket.on('disconnect', () => {
+      console.log('A user disconnected');                               
+  });
+  console.log('users', users);
+});
 app.post("/testjson", (req, res) => {
   console.log("req.body is", req.body);
   //     const payloadSize = req.get('content-length');
@@ -73,13 +127,16 @@ app.post("/sendnotification", async (req, res, next) => {
   }
 });
 
-
+app.get("/testlimitrequest", routeLimiter(), async (req, res) => {
+  const returnvalue = await testthing();
+  res.send(`return value is ${returnvalue}`);
+});
 
 // app.get('/welcome', (req, res) => {
 //     console.log("req user is ", req.user);
 //     res.send('Hello World!');
 //   })
 
-app.listen(port, () => {
+server.listen(port, () => {
   console.log(`app listening on port ${port}`);
 });
