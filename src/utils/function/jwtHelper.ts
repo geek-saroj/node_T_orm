@@ -13,6 +13,6 @@ export const verifyJwt = (token: string): object | string => {
   try {
     return jwt.verify(token, secretKey, { algorithms: ['HS512'] });
   } catch (err) {
-    throw new Error('Invalid tokenn');
+    throw new Error('Invalid tokenn4');
   }
 };
