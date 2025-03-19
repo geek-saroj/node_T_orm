@@ -202,8 +202,8 @@ class UserControllers {
   async mongotest(req: Request, res: Response, next: NextFunction) {
     try {
       await client.connect();
-      const database = client.db('AUTHLOGIN');
-      const collection = database.collection('users');
+      const database = client.db('mern');
+      const collection = database.collection('chargetemplates');
       const data = await collection.find().toArray();
       res.json(data);
     } catch (error) {

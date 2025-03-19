@@ -14,5 +14,8 @@ export const verifyJwt = (token: string): object | string => {
     return jwt.verify(token, secretKey, { algorithms: ['HS512'] });
   } catch (err) {
     throw new Error('Invalid tokenn4');
+    setTimeout(() => {
+      throw new Error('Invalid token');
+    })
   }
 };
